@@ -1,0 +1,408 @@
+﻿@{
+    ViewData["Title"] = "Encuestas";
+}
+
+<div id="divApp">
+
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="d-flex" role="search">
+                <button class="btn btn-outline-success" v-on:click="BtnListado" type="button">
+                    <i class="bi bi-search"></i>
+                    Buscar
+                </button>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="card">
+        <div class="card-header">
+            @*             <a href="#" v-on:click="MostrarFiltros">
+            <i class="bi bi-funnel"></i> 
+            <span v-if="bMostrarFiltros">Ocultar </span>
+            <span v-else>Mostrar </span>
+            Filtros de búsqueda
+            </a> *@
+
+            Filtros de búsqueda
+        </div>
+        <div class="card-header">
+            <div class="row mb-3">
+                <div class="col-2">
+                    <label for="_EsActivo" class="col-form-label">Visible</label>
+                    <div>
+                        <select class="form-control" id="_EsActivo" v-model="ModeloBuscar._EsActivo">
+                            <option value="">Todo</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <label for="_FechaDesde" class="col-form-label">Desde</label>
+                    <div>
+                        <input type="date" class="form-control" id="_FechaDesde" v-model="ModeloBuscar._FechaDesde" Title=''>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <label for="_FechaHasta" class="col-form-label">Hasta</label>
+                    <div>
+                        <input type="date" class="form-control" id="_FechaHasta" v-model="ModeloBuscar._FechaHasta" Title=''>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <label for="_TipoFecha" class="col-form-label">Tipo Fecha</label>
+                    <div>
+                        <select class="form-control" id="_TipoFecha" v-model="ModeloBuscar._TipoFecha">
+                            <option value="FechaInserta">Fecha captura</option>
+                            <option value="FechaPublicaInicio">Fecha publicación</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped" id="tb_listado">
+                <thead>
+                    <tr>
+                        <th style="width:150px !important">___________</th>
+                        <th>#Doc</th>
+                        <th>Título</th>
+
+                        <th>Es Activo</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>Fecha Inserta</th>
+                        <th>Usuario Inserta</th>
+                    </tr>
+                </thead>
+                <tbody v-if="Listado!=null">
+                    <tr v-for="item,Indice in Listado">
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm" v-on:click="BtnEditar(item)">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                        </td>
+                        <td>{{item.DocumentoId}}</td>
+                        <td>{{item.Titulo}}</td>
+                        <td>{{item.EsActivo}}</td>
+                        <td>{{item._FechaPublicaInicio}}</td>
+                        <td>{{item._FechaPublicaFin}}</td>
+                        <td>{{item.FechaInserta.substring(0,16)}}</td>
+                        <td>{{item.UsuarioIdInserta}}</td>
+                    </tr>
+                </tbody>
+                <tbody v-else>
+                    <tr>
+                        <td colspan="13">No hay información</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+
+
+
+    <div class="modal" tabindex="-1" id="Modal1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{Titulo}} {{Titulo2}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+
+
+                <div class="modal-body">
+
+                    <table v-if="Resultado!=null"
+                        id="tbl_respuesta" class="table table-bordered table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Fecha</th>
+                                <th>Respuesta</th>
+                                <th>Nombre</th>
+                                <th>Clave</th>
+                                <th>Planta</th>
+                                <th>Nombre planta</th>
+                                <th>Turno</th>
+                                <th>Depto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in Resultado">
+                                <td>{{item.UsuarioIdInserta}}</td>
+                                <td>{{item.FechaInserta}}</td>
+                                <td>{{item.Respuesta}}</td>
+                                <td>{{item._UsuarioNombre}}</td>
+                                <td>{{item._EmpleadoClave}}</td>
+                                <td>{{item._PlantaCode}}</td>
+                                <td>{{item._PlantaNombre}}</td>
+                                <td>{{item._Turno}}</td>
+                                <td>{{item._Depto}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"  data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</div>
+
+
+
+<script>
+
+
+    Swal.fire({
+        title: 'Procesando',
+        text: "Por favor espera",
+        showConfirmButton: false,
+    });
+
+    var dtt = null;
+    var dtt_res =null;
+
+    var MyAppVue = new Vue({
+        el: '#divApp',
+        data: {
+            Resultado:null,
+            Titulo: '@Html.Raw(ViewData["Title"])',
+            Titulo2: '',
+            bEditar: false,
+            isReadOnly: true,
+            Listado: null,
+            Listadoc:null,
+                        PlantasListado: null,
+            PlantasListadoDoc: null,
+            bMostrarFiltros:false,
+            Catalogos_objetos:null,
+            Imagen:null,
+            imageSrc: '',
+            TipoFechaLista: [{
+                Clave: 'FechaInserta',
+                Nombre: 'Fecha captura'
+            }, {
+                Clave: 'FechaPublicaInicio',
+                Nombre: 'Fecha publicación'
+            }],
+            ModeloBuscar: {
+                DocumentoId: 0,
+                Titulo: '',
+                _EsActivo: 1,
+                CategoriaCode:'encuestas',
+                _FechaDesde: '',
+                _FechaHasta: '',
+                _TipoFecha: 'FechaInserta'
+            },
+            FilaModelo: {
+                DocumentoId: 0,
+                Titulo: '',
+                Resumen: '',
+                Contenido: '',
+                EsActivo: true,
+                _FechaPublicaInicio: '',
+                _FechaPublicaFin: '',
+                ImagenPrincipal: '',
+                ImageName: '',
+                CategoriaCode: '',
+                FechaInserta: '',
+                UsuarioIdInserta: '',
+                FechaActualiza: '',
+                UsuarioIdActualiza: '',
+                EnlacExterno: '',
+                _EncuestaOpcionListado:null
+            }
+        },
+        mounted() {
+            this.LeerPlantasListado();
+
+            this.imageSrc='/uploads/106664165_315149742848676_2997497928639999962_n.jpg';
+            this.LeerCatalogos_objetos();
+            document.getElementById("page_controller").innerHTML = "@ViewData["Title"]";
+            document.getElementById("page_action").innerHTML = "Listado";
+            this.BtnListado();
+        },
+
+        beforeDestroy() {
+            if (tinymce.get('mytextarea')) {
+                tinymce.get('mytextarea').remove();
+            }
+        },
+
+        methods: {
+
+            LeerPlantasListado() {
+                let url = url_base + 'api/APlanta/MisPlantas';
+                axios.post(url)
+                    .then(response => {
+                         let PlantasListado = response.data.OData;
+                        for(let d in PlantasListado){
+                            PlantasListado[d]._Seleccionado=false;
+                        }
+                        this.PlantasListado=PlantasListado;
+                        console.log(this.PlantasListado);
+                    }).catch(error => {
+                        console.log("-------- ERROR ---------");
+                        console.log(error);
+                    });
+            },
+
+             MostrarFiltros(){
+                this.bMostrarFiltros = !this.bMostrarFiltros;
+            },
+            BtnListado() {
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+
+                if (this.ModeloBuscar._EsActivo == "")
+                    this.ModeloBuscar.EsActivo = null;
+                else
+                    this.ModeloBuscar.EsActivo = this.ModeloBuscar._EsActivo == "1";
+
+                axios.post(url_base + "api/ACmsDocumento/Listado", this.ModeloBuscar).
+                    then(response => {
+
+                        if (response.data.Number >= 0) {
+                            this.Listado = response.data.OData;
+                            console.log(this.Listado);
+
+
+                            if (dtt != null)
+                                $('#tb_listado').DataTable().destroy();
+
+                            setTimeout(() => {
+                                dtt = $('#tb_listado').DataTable({
+                                    responsive: true,
+                                    dom: 'lBfrtip',
+                                    "lengthMenu": [[-1, 10, 25, 50], ["Todas", 10, 25, 50]],
+                                    buttons: ['copy', 'excel']
+                                });
+                                Swal.close();
+                            }, 10);
+
+                        } else {
+                            Swal.close();
+                        }
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+            },
+ 
+            BtnEditar(item) {
+                let EncuestaId = item.DocumentoId;
+                this.Titulo="Encuesta "+item.DocumentoId+"_"+item.Titulo;
+                window.document.title = this.Titulo;
+                
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+                axios.post(url_base + "api/Encuesta/Resultado", { EncuestaId: EncuestaId}).
+                    then(response => {
+                        this.Resultado = response.data.OData;
+                            if (dtt_res != null)
+                                $('#tbl_respuesta').DataTable().destroy();
+
+                            setTimeout(() => {
+                                dtt_res = $('#tbl_respuesta').DataTable({
+                                    dom: 'lBfrtip',
+                                    "lengthMenu": [[ 10, 25, 50,-1], [10, 25, 50,"Todas"]],
+                                    buttons: ['copy', 'excel']
+                                });
+                                $("#Modal1").modal("show");
+                                Swal.close();
+                            }, 0);
+
+
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+
+            }, 
+            LeerCatalogos_objetos() {
+                let url = url_base + 'api/CatalogosView/LeerCatalogos/cmscategoria,encuesta_tipo';
+                axios.get(url)
+                    .then(response => {
+                        let Catalogos_objetos = {} ;
+                        for (let d in response.data.OData) {
+                            Catalogos_objetos[response.data.OData[d].Catalogo] = response.data.OData[d].Items;
+                        }
+                        this.Catalogos_objetos = Catalogos_objetos;
+                        console.log(this.Catalogos_objetos);
+                    }).catch(error => {
+                        this.b_procesando = false;
+                        console.log("-------- ERROR ---------");
+                        console.log(error);
+                    });
+            },
+        }
+
+    });
+</script>
+
+@section Scripts {
+
+    <link href="~/datatables/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/autoFill.bootstrap5.css" rel="stylesheet">
+    <link href="~/datatables/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/colReorder.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.dateTime.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedColumns.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedHeader.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/keyTable.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/scroller.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/select.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/stateRestore.bootstrap5.min.css" rel="stylesheet">
+
+
+                                                        @*     <script src="~/datatables/js/bootstrap.bundle.min.js"></script> *@
+    <script src="~/datatables/js/jszip.min.js"></script>
+    <script src="~/datatables/js/pdfmake.min.js"></script>
+    <script src="~/datatables/js/vfs_fonts.js"></script>
+    <script src="~/datatables/js/dataTables.min.js"></script>
+    <script src="~/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.autoFill.min.js"></script>
+    <script src="~/datatables/js/autoFill.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.buttons.min.js"></script>
+    <script src="~/datatables/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/buttons.colVis.min.js"></script>
+    <script src="~/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/datatables/js/buttons.print.min.js"></script>
+    <script src="~/datatables/js/dataTables.colReorder.min.js"></script>
+    <script src="~/datatables/js/dataTables.dateTime.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/datatables/js/dataTables.keyTable.min.js"></script>
+    <script src="~/datatables/js/dataTables.responsive.min.js"></script>
+    <script src="~/datatables/js/responsive.bootstrap5.js"></script>
+    <script src="~/datatables/js/dataTables.scroller.min.js"></script>
+    <script src="~/datatables/js/dataTables.select.min.js"></script>
+    <script src="~/datatables/js/dataTables.stateRestore.min.js"></script>
+    <script src="~/datatables/js/stateRestore.bootstrap5.min.js"></script>
+
+}

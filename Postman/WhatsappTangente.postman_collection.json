@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "c4b6c3cf-c0fd-4bc6-ac7b-14e9f5628736",
+		"name": "WhatsappTangente",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9782194"
+	},
+	"item": [
+		{
+			"name": "MensajeTexto",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Usuario_id\":\"tangente\",\r\n    \"Password\":\"elotesDulces\",\r\n    \"Destinatarios\":\"5544332211\",\r\n    \"Mensaje\":\"sera que llega la imagen?\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5245/api/Whatsapp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5245",
+					"path": [
+						"api",
+						"Whatsapp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Mensaje Con imagen",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Usuario_id\":\"tangente\",\r\n    \"Password\":\"elotesDulces\",\r\n    \"Destinatarios\":\"5522334411\",\r\n    \"Mensaje\":\"Mensaje con imagen que viene de una url\",\r\n    \"Archivo_url\":\"https://avatars.githubusercontent.com/u/167478749?v=4\"\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5245/api/Whatsapp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5245",
+					"path": [
+						"api",
+						"Whatsapp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Mensaje Con imagen Binario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Usuario_id\":\"tangente\",\r\n    \"Password\":\"elotesDulces\",\r\n    \"Destinatarios\":\"5522334411\",\r\n    \"Mensaje\":\"Arcivo o imagen adjunto\",\r\n    \"Archivo_local\":{\r\n        \"_FileName\":\"logotangenten.png\",\r\n        \"_Bytes\":\"iVBORw0KGIsKDxaL4ehwAAAABJRU5ErkJggg==\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5245/api/Whatsapp",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5245",
+					"path": [
+						"api",
+						"Whatsapp"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

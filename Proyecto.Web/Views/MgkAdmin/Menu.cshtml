@@ -1,0 +1,418 @@
+﻿@{
+    ViewData["Title"] = "Menú";
+}
+
+<div id="divParametros">
+
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="d-flex" role="search">
+                <button class="btn btn-outline-secondary text-white" v-on:click="BtnListado" type="button">
+                    <i class="bi bi-list-task"></i>
+                    Listado
+                </button>
+                <span>&nbsp;</span>
+                <button class="btn btn-outline-secondary text-white" v-on:click="BtnEditar(true,-1)" type="button">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    Nuevo
+                </button>
+            </div>
+        </div>
+    </nav>
+    <br />
+
+    <table class="table table-bordered table-striped" id="tb_listado">
+        <thead>
+            <tr>
+                <th style="width:150px !important">___________</th>
+                <th>Menu_id</th>
+                <th>Titulo</th>
+                <th>Descripcion</th>
+                <th>Imagen</th>
+                <th>Ventana</th>
+                <th>Enlace</th>
+                <th>Estatus</th>
+                <th>I18n</th>
+                <th>Orden</th>
+                <th>Menu_id_padre</th>
+                <th>Grupo</th>
+                <th>Es_top</th>
+                <th>Sistema</th>
+            </tr>
+        </thead>
+        <tbody v-if="Listado!=null">
+            <tr v-for="item,Indice in Listado">
+                <td>
+                    <button type="button" class="btn btn-info btn-sm" v-on:click="BtnEditar(true,Indice)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" v-on:click="BtnBorrar(Indice)">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </td>
+                <td style="text-alignleft">{{item.Menu_id}}</td>
+                <td>{{item.Titulo}}</td>
+                <td>{{item.Descripcion}}</td>
+                <td>{{item.Imagen}}</td>
+                <td>{{item.Ventana}}</td>
+                <td>{{item.Enlace}}</td>
+                <td>
+                    <span v-if="item.Es_activo=='true'">
+                        Activo
+                    </span>
+                    <span v-if="item.Es_activo=='false'">
+                        Inactivo
+                    </span>
+                        
+                 </td>
+                <td>{{item.I18n}}</td>
+                <td style="text-align:left">{{item.Orden}}</td>
+                <td style="text-align:left">{{item.Menu_id_padre}}</td>
+                <td style="text-align:left">{{item.Grupo}}</td>
+                <td style="text-align:left">{{item.Es_top}}</td>
+                <td style="text-align:left">{{item.Sistema}}</td>
+            </tr>
+        </tbody>
+        <tbody v-else>
+            <tr>
+                <td colspan="13">No hay información</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="modal" tabindex="-1" id="Modal1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{Titulo}} {{Titulo2}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="FilaModelo!=null">
+
+                        <div class="row mb-3">
+                          
+                            <div class="col-sm-4">
+                                <label for="Menu_id" class="col-sm-4 col-form-label">Menu id</label>
+                                <input type="text" class="form-control" id="Menu_id" v-model="FilaModelo.Menu_id" Title=''>
+                            </div>
+                           
+                            <div class="col-sm-4">
+                                <label for="Titulo" class="col-sm-4 col-form-label">Título</label>
+                                <input type="text" class="form-control" id="Titulo" v-model="FilaModelo.Titulo" Title=''>
+                            </div>
+                           
+                            <div class="col-sm-4">
+                                <label for="Descripcion" class="col-sm-4 col-form-label">Descripción</label>
+                                <input type="text" class="form-control" id="Descripcion" v-model="FilaModelo.Descripcion" Title=''>
+                            </div>
+                        </div>
+                       
+                     
+                        <div class="row mb-3">
+                          
+                            <div class="col-sm-4">
+                                <label for="Imagen" class="col-sm-4 col-form-label">Icono</label>
+                                <input type="text" class="form-control" id="Imagen" v-model="FilaModelo.Imagen" Title=''>
+                            </div>
+                          
+                            <div class="col-sm-4">
+                                <label for="Ventana" class="col-sm-4 col-form-label">Ventana</label>
+                                <input type="text" class="form-control" id="Ventana" v-model="FilaModelo.Ventana" Title=''>
+                            </div>
+                           
+                            <div class="col-sm-4">
+                                <label for="Enlace" class="col-sm-4 col-form-label">Enlace</label>
+                                <input type="text" class="form-control" id="Enlace" v-model="FilaModelo.Enlace" Title=''>
+                            </div>
+                        </div>
+                       
+                      
+                        <div class="row mb-3">
+                           
+                          
+                          
+                            <div class="col-sm-4">
+                                <label for="I18n" class="col-sm-4 col-form-label">I18n</label>
+                                <input type="text" class="form-control" id="I18n" v-model="FilaModelo.I18n" Title=''>
+                            </div>
+                           
+                            <div class="col-sm-4">
+                                <label for="Orden" class="col-sm-4 col-form-label">Orden</label>
+                                <input type="text" class="form-control" id="Orden" v-model="FilaModelo.Orden" Title=''>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="Es_activo" class="col-sm-12 col-form-label">Activar</label>
+                                <input type="checkbox" id="Es_activo" v-model="FilaModelo.Es_activo" Title='' style="transform: scale(1.5); margin-right: 5px;">
+                            </div>
+                        </div>
+                     
+                       
+                        <div class="row mb-3">
+                          
+                            <div class="col-sm-6">
+                                <label for="Menu_id_padre" class="col-sm-6 col-form-label">Menu padre</label>
+                                <input type="text" class="form-control" id="Menu_id_padre" v-model="FilaModelo.Menu_id_padre" Title=''>
+                            </div>
+                          
+                            <div class="col-sm-6">
+                                <label for="Grupo" class="col-sm-6 col-form-label">Grupo</label>
+                                <input type="text" class="form-control" id="Grupo" v-model="FilaModelo.Grupo" Title=''>
+                            </div>
+                        </div>
+                       
+                        <div class="row mb-3">
+                          
+                           
+                            
+                            <div class="col-sm-6">
+                                <label for="Sistema" class="col-sm-6 col-form-label">Sistema</label>
+                                <input type="text" class="form-control" id="Sistema" v-model="FilaModelo.Sistema" Title=''>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="Es_top" class="col-sm-12 col-form-label">Es top</label>
+                                <input type="checkbox" style="width:25px;height:25px" id="Es_top" v-model="FilaModelo.Es_top" Title=''>
+                            </div>
+                        </div>
+                      
+                        
+
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" v-on:click="BtnEditar(false,-1)" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click="BtnGuardar()"> <i class="bi bi-floppy"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+
+    var dtt = null;
+
+    var ParametrosVue = new Vue({
+        el: '#divParametros',
+        data: {
+            Titulo: '@Html.Raw(ViewData["Title"])',
+            Titulo2: '',
+            bEditar: false,
+            isReadOnly: true,
+            Listado: null,
+            FilaModelo: {
+                Menu_id: 0,
+                Titulo: '',
+                Descripcion: '',
+                Imagen: '',
+                Ventana: '',
+                Enlace: '',
+                Es_activo: '',
+                I18n: '',
+                Orden: '',
+                Menu_id_padre: '',
+                Grupo: '',
+                Es_top: '',
+                Sistema: '',
+            }
+        },
+        mounted() {
+            document.getElementById("page_controller").innerHTML = "@ViewData["Title"]";
+            document.getElementById("page_action").innerHTML = "Opciones del sistema";
+            this.BtnListado();
+        },
+        methods: {
+            BtnListado() {
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+                axios.get(url_base + "api/AMenu/Menus").
+                    then(response => {
+
+                        if (response.data.Number >= 0) {
+                            this.Listado = response.data.OData;
+
+                            if (dtt != null)
+                                $('#tb_listado').DataTable().destroy();
+
+                            setTimeout(() => {
+                               dtt = $('#tb_listado').DataTable({
+                                     responsive: true,
+                                    dom: '<"row"<"col-sm-3"l><"col-sm-2 "B><"col-sm-7 text-end"f >rtip',
+                                    "lengthMenu": [[-1, 10, 25, 50], ["Todas", 10, 25, 50]],
+                                     buttons: [
+            {
+                extend: 'copy',
+                className: 'btn btn-primary me-2'
+            },
+            {
+                extend: 'excel',
+                className: 'btn btn-success'
+            }
+        ]
+                                });
+                                Swal.close();
+                            }, 0);
+
+                        } else {
+                            Swal.close();
+                        }
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+            },
+            BtnEditar(bEditar, indice) {
+                this.bEditar = bEditar;
+                if (bEditar)
+                    $("#Modal1").modal("show");
+                else
+                    $("#Modal1").modal("hide");
+                if (indice >= 0) {
+                    this.Titulo2 = "Editar";
+                    this.isReadOnly = true;
+                    this.FilaModelo = this.Listado[indice];
+
+                    // axios.get(url_base + "api/AMenu/" +this.Listado[indice].Menu_id).
+                    //     then(response => {
+                    //         this.FilaModelo = response.data.OData;
+                    //     }).catch(error => {
+                    //         console.log("### ERROR ::");
+                    //         console.log(error)
+                    //     });
+                }
+                else {
+                    this.Titulo2 = "Nuevo";
+                    this.isReadOnly = false;
+                    this.FilaModelo = {
+                        Menu_id: 0,
+                        Titulo: '',
+                        Descripcion: '',
+                        Imagen: '',
+                        Ventana: '',
+                        Enlace: '',
+                        Es_activo: true,
+                        I18n: '',
+                        Orden: 0,
+                        Menu_id_padre: 0,
+                        Grupo: 0,
+                        Es_top: false,
+                        Sistema: '',
+                    };
+                }
+            },
+            BtnGuardar() {
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+
+                axios.post(url_base + "api/AMenu/Guardar", this.FilaModelo).
+                    then(response => {                        
+                        if (response.data.Number >= 0) {
+                            this.bEditar = false;
+                            this.BtnListado();
+                            $("#Modal1").modal("hide");
+                        }else{
+                            Swal.fire(response.data.Message);
+                        }
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+            },
+            BtnBorrar(Indice) {
+
+                 Swal.fire({
+      title: "Desea eliminar el menu?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Eliminar",
+      denyButtonText: `No Eliminar`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+           axios.delete(url_base + "api/AMenu/" + this.Listado[Indice].Menu_id).
+                    then(response => {
+                           Swal.fire({
+        title: "Eliminación Exitosa!",
+        icon: "success",
+        draggable: true
+    }).then(() => {
+        setTimeout(() => {
+            if (response.data.Number >= 0) {
+                this.bEditar = false;
+                this.BtnListado();
+            }
+        }, 1000); // Pausa de 2 segundos
+    });
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+
+      } else if (result.isDenied) {
+        Swal.fire("No se elimino", "", "info");
+      }
+    });
+
+
+            },
+        }
+    });
+</script>
+
+@section Scripts {
+
+    <link href="~/datatables/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/autoFill.bootstrap5.css" rel="stylesheet">
+    <link href="~/datatables/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/colReorder.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.dateTime.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedColumns.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedHeader.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/keyTable.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/scroller.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/select.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/stateRestore.bootstrap5.min.css" rel="stylesheet">
+
+
+    @* <script src="~/datatables/js/bootstrap.bundle.min.js"></script> *@
+    <script src="~/datatables/js/jszip.min.js"></script>
+    <script src="~/datatables/js/pdfmake.min.js"></script>
+    <script src="~/datatables/js/vfs_fonts.js"></script>
+    <script src="~/datatables/js/dataTables.min.js"></script>
+    <script src="~/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.autoFill.min.js"></script>
+    <script src="~/datatables/js/autoFill.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.buttons.min.js"></script>
+    <script src="~/datatables/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/buttons.colVis.min.js"></script>
+    <script src="~/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/datatables/js/buttons.print.min.js"></script>
+    <script src="~/datatables/js/dataTables.colReorder.min.js"></script>
+    <script src="~/datatables/js/dataTables.dateTime.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/datatables/js/dataTables.keyTable.min.js"></script>
+    <script src="~/datatables/js/dataTables.responsive.min.js"></script>
+    <script src="~/datatables/js/responsive.bootstrap5.js"></script>
+    <script src="~/datatables/js/dataTables.scroller.min.js"></script>
+    <script src="~/datatables/js/dataTables.select.min.js"></script>
+    <script src="~/datatables/js/dataTables.stateRestore.min.js"></script>
+    <script src="~/datatables/js/stateRestore.bootstrap5.min.js"></script>
+
+}

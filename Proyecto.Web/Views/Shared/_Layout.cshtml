@@ -1,0 +1,29 @@
+﻿<!doctype html>
+@using Mgk.Base.WebCore.Codigo;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+
+}
+<html lang="en" class="h-100" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.122.0">
+    <title>HOLA</title>
+    <style>
+        body{
+            background-color:#000000;
+            color:antiquewhite;
+        }
+        a{
+            color: greenyellow;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column h-100">
+    @RenderBody()
+</body>
+</html>

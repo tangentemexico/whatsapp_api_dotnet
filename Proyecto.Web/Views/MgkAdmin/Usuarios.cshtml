@@ -1,0 +1,475 @@
+﻿@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div id="divUsuarios">
+
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="d-flex" role="search">
+                <button class="btn btn-outline-secondary text-white" v-on:click="BtnListado" type="button">
+                    <i class="bi bi-list-task"></i>
+                    Buscar
+                </button>
+                <span>&nbsp;</span>
+                <button class="btn btn-outline-secondary text-white" v-on:click="BtnEditar(true,-1)" type="button">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    Nuevo
+                </button>
+
+                <span>&nbsp;</span>
+                <div>
+                    <select class="form-control" id="PlantaCode" v-model="BuscarModel._PlantaCode" title="">
+                        <option v-if="PlantasListado!=null" v-for="item in PlantasListado" v-bind:value="item.Clave">{{item.Clave.split('-')[0]}} - {{item.Nombre}}</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="modal" tabindex="-1" id="Modal1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{Titulo}} {{Titulo2}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div class="form-group row">
+                                <label for="Usuario_id" class="col-sm-4 col-form-label text-right">Usuario_id</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="Usuario_id" placeholder="" v-model="FilaModelo.Usuario_id" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="Nombre" class="col-sm-4 col-form-label text-right">Nombre</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="Nombre" placeholder="" v-model="FilaModelo.Nombre" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="Email" class="col-sm-4 col-form-label text-right">Email</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="Email" placeholder="" v-model="FilaModelo.Email" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="Telefono" class="col-sm-4 col-form-label text-right">Teléfono</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="Telefono" placeholder="" v-model="FilaModelo.Telefono" autocomplete="off">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="EmpleadoClave" class="col-sm-4 col-form-label text-right">Empleado clave</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" id="EmpleadoClave" placeholder="" v-model="FilaModelo.EmpleadoClave" autocomplete="off">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="Password" class="col-sm-4 col-form-label text-right">Password</label>
+                                <div class="col-sm-8">
+                                    <input type="password" class="form-control" id="Password" placeholder="" v-model="FilaModelo.Password">
+                                    <i><strong>Opcional:</strong> Llenar estos campos solamente cuando desea modificar la contraseña del usuario</i>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="ConfirmaPassword" class="col-sm-4 col-form-label text-right">Confirma Password</label>
+                                <div class="col-sm-8">
+                                    <input type="password" class="form-control" id="ConfirmaPassword" placeholder="" v-model="FilaModelo.ConfirmaPassword">
+                                    <i><strong>Contraseña segura:</strong> Longitud mínima de 6 caracteres, debe incluir al menos un dígito, una mayuscula y una minuscula</i>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="Es_activo" class="col-sm-4 col-form-label text-right">Activo</label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" id="Es_activo" placeholder="" v-model="FilaModelo.Es_activo">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>-</th>
+                                        <th>Grupo de usuario</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="Fila,Indice in FilaModelo._GrupouList">
+                                        <td><input type="checkbox" v-model="Fila.Es_activo" />  </td>
+                                        <td>{{Fila.Nombre}}  </td>
+                                    </tr>
+                                </tbody>
+                            </table>                       
+                        </div>
+                        <div class="col-4">
+
+                            <table class="table" v-if="bMostrarPlantas">
+                                <thead>
+                                    <tr>
+                                        <th>-</th>
+                                        <th>Clave </th>
+                                        <th>Plantas asignadas</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="Fila,Indice in FilaModelo._PlantaLista">
+                                        <td><input type="checkbox" v-model="Fila._Es_activo" />  </td>
+                                        <td>{{Fila.PlantaCode}}  </td>
+                                        <td>{{Fila._PlantaNombre}}  </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-primary" v-on:click="EnviarCredenciales"> Enviar credenciales </button>
+
+                    <button type="button" class="btn btn-secondary" v-on:click="BtnEditar(false,-1)" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click="BtnGuardar()"> <i class="bi bi-floppy"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <table id="tb_listado" class="table table-bordered table-striped ">
+        <thead >
+            <tr>
+                <th style="width:120px;text-align:center;font-size:14px">Opciones</th>
+                <th style="text-align:left;font-size:14px" >Usuario</th>
+                <th style="text-align:left;font-size:14px">Nombre</th>
+                <th style="text-align:left;font-size:14px">E-mail</th>
+                <!--     <th style ="text-align:center;font-size:14px">
+                    Empleado</th>  -->
+                <!--     <th style="text-align:center;font-size:14px">Planta Cve</th>  -->
+                       <th style="text-align:left;font-size:14px">Planta</th>  
+                <th style="text-align:left;font-size:14px">Perfil</th>
+                <th style="text-align:left;font-size:14px">Estatus</th>
+                <th style="text-align:left;font-size:14px">Último acceso</th>
+            </tr>
+        </thead>
+        <tbody v-if="Listado!=null">
+            <tr v-for="item,Indice in Listado">
+                <td>
+                    <button type="button" class="btn btn-info btn-sm" v-on:click="BtnEditar(true,Indice)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" v-on:click="BtnBorrar(Indice)">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </td>
+                <td style="text-align:left">{{item.Usuario_id}}</td>
+                <td style="text-align:left">{{item.Nombre}}</td>
+                <td style="text-align:left">{{item.Email}}</td>
+                <!--   <td>{{item.EmpleadoClave}}</td> -->
+                <!--    <td>{{item._PlantaCode}}</td>  -->
+                <td style="text-align:left">{{item._PlantaNombre}}</td>
+                <td style="text-align:left">{{item._Perfil}}</td>
+                <td style="text-align:left">{{item.Es_activo==1?"Activo":"Inactivo"}}</td>
+                <td style="text-align:left">{{formatFechaT(item.Fecha_ultimo_ingreso)}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    var tblusuarios = null;
+
+    var UsuariosVue = new Vue({
+        el: '#divUsuarios',
+        data: {
+            bMostrarPlantas:false,
+            indice: -1,
+            bEditar: false,
+            PlantasListado: null,
+            Titulo: '@Html.Raw(ViewData["Title"])',
+            Titulo2: '',
+            BuscarModel: {
+                _PlantaCode: ''
+            },
+            Listado: null,
+            FilaModelo: {
+                Usuario_id: '',
+                Nombre: '',
+                Password: '',
+                ConfirmaPassword: '',
+                Email: '',
+                Es_activo: true,
+                Es_admin: '',
+                EmpleadoClave:''
+            },
+        },
+        mounted() {
+            //this.BtnListado();
+            this.LeerPlantasListado();
+
+            document.getElementById("page_controller").innerHTML = "@ViewData["Title"]";
+            document.getElementById("page_action").innerHTML = "Lista de usuarios";
+        },
+        methods: {
+                formatFechaT(fecha) {
+        if (!fecha) return '';
+        const date = new Date(fecha);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    },
+            NuevaFila() {
+                this.FilaModelo = {
+                    Usuario_id: '',
+                    Nombre: '',
+                    Password: '',
+                    ConfirmaPassword: '',
+                    Email: '',
+                    Es_activo: true,
+                    Es_admin: '',
+                    EmpleadoClave: ''
+                };
+              
+            },
+
+            LeerPlantasListado() {
+                let url = url_base + 'api/APlanta/MisPlantas';
+                axios.post(url)
+                    .then(response => {
+                        this.PlantasListado = response.data.OData;
+                        this.BuscarModel._PlantaCode = this.PlantasListado[0].Clave;
+                        //this.BtnListado();
+                    }).catch(error => {
+                        this.b_procesando = false;
+                        console.log("-------- ERROR ---------");
+                        console.log(error);
+                    });
+            },
+
+            BtnListado() {
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+
+                axios.post(url_base + "api/AUsuario/Listado/", this.BuscarModel).
+                    then(response => {
+                        //console.log(JSON.stringify(response.data));
+
+                        if (response.data.Number >= 0) {
+                            this.Listado = response.data.OData;
+                            console.log(this.Listado);
+
+                            if (tblusuarios != null)
+                                $('#tb_listado').DataTable().destroy();
+
+                                                   setTimeout(() => {
+                            tblusuarios = $('#tb_listado').DataTable({
+                                responsive: true,
+                                dom: '<"row"<"col-sm-3"l><"col-sm-2 "B><"col-sm-7 text-end"f >rtip',
+                                "lengthMenu": [[ 50, 25, 10,-1], [ 50, 25, 10,"Todas"]],
+                                 buttons: [
+        {
+            extend: 'copy',
+            className: 'btn btn-primary me-2'
+        },
+        {
+            extend: 'excel',
+            className: 'btn btn-success'
+        }
+    ]
+
+                                    });
+                                Swal.close();
+                            }, 0);
+
+                        }
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error.response)
+                    });
+            },
+            BtnEditar(bEditar, indice) {
+                this.indice = indice;
+                console.log(indice);
+                this.bEditar = bEditar;
+
+                if (bEditar == false && indice < 0) { 
+                    $("#Modal1").modal("hide");
+                    return;
+                }
+
+                if (indice >= 0) {
+                    axios.post(url_base + "api/AUsuario/GetUsuarioId", { Usuario_id:this.Listado[indice].Usuario_id }).
+                        then(response => {
+                            if (response.data.Number >= 0) {
+                                this.FilaModelo = response.data.OData;
+                                this.FilaModelo.Password = '';
+                                this.FilaModelo.ConfirmaPassword = '';
+                                $("#Modal1").modal("show");
+
+                                this.bMostrarPlantas = this.FilaModelo._GrupouList.some(g => g.Es_activo==true && g.Grupou_code == "RHP");
+                            }
+                        }).catch(error => {
+                            console.log("### ERROR ::");
+                            console.log(error.response)
+                        });
+
+                }
+                else {
+                    $("#Modal1").modal("show");
+                    this.NuevaFila();
+                }
+            },
+            EnviarCredenciales() {
+                if (!confirm("Desea asignar nueva contraseña aleatoria?")) {
+                    return;
+                }
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+                axios.post(url_base + "api/AAcceso/EnviarCredenciales", this.FilaModelo).
+                    then(response => {
+                        Swal.fire(response.data.Message);
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error.response)
+                    });
+            },
+            BtnGuardar() {
+                if (this.FilaModelo.Password != this.FilaModelo.ConfirmaPassword) {
+                    Swal.fire("Si desea asignar un password, por favor que confirme que sea el mismo");
+                    return;
+                }
+
+                if (this.FilaModelo.Password != "") {
+
+                    if (this.FilaModelo.Password.length < 6) {
+                        Swal.fire("Longitud mínima de 6 caracteres");
+                        return;
+                    }
+
+                    let regex = /^(?=.*\d)(?=.*[a-záéíóúüñ]).*[A-ZÁÉÍÓÚÜÑ]/;
+                    if (!regex.test(this.FilaModelo.Password)) {
+                        Swal.fire("No cumple la regla de contraseña segura");
+                        return;
+                    }
+                }
+
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+
+                if (this.bMostrarPlantas == false)
+                    this.FilaModelo._PlantaLista = [];
+                this.FilaModelo._Password = null;
+                console.log(JSON.stringify(this.FilaModelo));               
+                axios.post(url_base + "api/AUsuario/Guardar", this.FilaModelo).
+                    then(response => {                        
+                        if (response.data.Number >= 0) {
+                            this.BtnEditar(false, -1);
+                            Swal.close();
+                            this.BtnListado();
+                        } else {
+                            Swal.fire(response.data.Message);
+                            Swal.fire(response.data.Exception);
+                        }
+
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error.response)
+                    });
+            },
+            BtnBorrar(Indice) {
+
+                                  Swal.fire({
+      title: "Desea eliminar el siguiente usuario?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Eliminar",
+      denyButtonText: `No Eliminar`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+            axios.delete(url_base + "api/AUsuario/" + this.Listado[Indice].Usuario_id).
+                    then(response => {
+                           Swal.fire({
+        title: "Eliminación Exitosa!",
+        icon: "success",
+        draggable: true
+    }).then(() => {
+        setTimeout(() => {
+            if (response.data.Number >= 0) {
+                this.bEditar = false;
+                this.BtnListado();
+            }
+        }, 1000); // Pausa de 2 segundos
+    });
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+
+      } else if (result.isDenied) {
+        Swal.fire("No se elimino", "", "info");
+      }
+    });
+              
+            },
+        }
+    });
+</script>
+<style lang="css" scoped>
+    .centrar_textos{
+        text-align:center;
+        font-size:12px;
+    }
+
+</style>
+
+
+@section head {
+
+    <link href="~/datatables/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedColumns.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedHeader.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/scroller.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/select.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/stateRestore.bootstrap5.min.css" rel="stylesheet">
+
+
+    <script src="~/datatables/js/jszip.min.js"></script>
+    <script src="~/datatables/js/pdfmake.min.js"></script>
+    <script src="~/datatables/js/vfs_fonts.js"></script>
+    <script src="~/datatables/js/dataTables.min.js"></script>
+    <script src="~/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.autoFill.min.js"></script>
+    <script src="~/datatables/js/autoFill.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.buttons.min.js"></script>
+    <script src="~/datatables/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/buttons.colVis.min.js"></script>
+    <script src="~/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/datatables/js/buttons.print.min.js"></script>
+    <script src="~/datatables/js/dataTables.colReorder.min.js"></script>
+    <script src="~/datatables/js/dataTables.select.min.js"></script>
+    <script src="~/datatables/js/dataTables.stateRestore.min.js"></script>
+    <script src="~/datatables/js/stateRestore.bootstrap5.min.js"></script>
+}

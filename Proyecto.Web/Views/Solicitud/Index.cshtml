@@ -1,0 +1,373 @@
+﻿@{
+    ViewData["Title"] = "Solicitud";
+}
+
+<div id="divApp">
+
+    <div class="modal" tabindex="-1" id="Modal1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" v-if="FilaModelo!=null">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{Titulo}} :: [{{FilaModelo.DocumentoId}}] {{FilaModelo.Titulo}} </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="FilaModelo!=null">
+                        <div class="row">
+                            <div class="col-lg-4 col-12">
+                                <img v-if="FilaModelo.ImagenPrincipal!=''&&FilaModelo.ImagenPrincipal!=null" v-bind:src="FilaModelo.ImagenPrincipal" height="115" align="left" />
+                            </div>                            
+                            <div class="col-lg-8 col-12 " v-html="FilaModelo.Resumen"></div>
+                            <hr />
+                        </div>
+                        <br />
+                        <div class="row mb-3" v-for="(item, Indice) in FilaModelo._PreguntasListado">
+                          <label class="col-sm-12 center col-form-label">
+                                {{ Indice + 1 }}. {{ item.Pregunta }}
+                            </label>
+
+                            <div class="col-sm-8 " v-if="item.EncuestaTipoId== 1">
+                                <input type="text"
+                                       :id="'option-' + Indice"
+                                       v-name="'opcion-' + Indice"
+                                       v-model="item._Respuesta"
+                                     
+                               
+                                class="form-control">
+                            </div>
+                            <!--v-bind:value="item.Valor" -->
+
+
+
+
+
+
+
+
+                            <div class="row col-sm-12" v-if="item.EncuestaTipoId == 2" v-for="(ito, Index) in item._EncuestaOpcionListado" :key="Index">
+
+                                <div class="col-sm-2">
+                                    <label :for="'option-' + Indice + '-' + Index" class="form-check-label">
+                                        {{ ito.Opcion }}
+                                    </label>
+                                </div>
+                                <div class="col-1 text-center">
+                                    <input type="radio"
+                                           :id="'option-' + Indice + '-' + Index"
+                                           :name="'pregunta-' + Indice"
+                                           v-model="item._Respuesta"
+                                           :value="ito.Opcion"
+                                           class="form-check-input circulo">
+                                </div>
+
+                            </div>
+                            <!--
+                            <div v-if="item.EncuestaTipoId== 2">
+                                <div class="row" v-for="(ite, Indice2) in item.Opcion.split(',')">
+                                    <div class="col-2">
+                                    <input type="radio"
+                                               v-bind:id="'option-' +Indice+'_'+ Indice2"
+                                               v-bind:name="'opcion_' +Indice"
+                                               v-model="item.Respuesta"
+                                               v-bind:value="ite"
+                                               class="form-check-input circulo" />
+                                    </div>
+                                    <label :for="'option-'+Indice+'_' + Indice2" class="col-8 col-form-label">
+                                        {{ ite }}
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" v-on:click="BtnEditar(false,-1)" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Cerrar</button>
+                    <button type="button" class="btn btn-primary" v-if="FilaModelo.Respuesta==null" v-on:click="BtnGuardar()"> <i class="bi bi-send"></i> Enviar solicitud</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class=" col-md-6" v-if="Listado!=null" v-for="item,Indice in Listado">
+            <div class="card row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative" style=" height: 100%; /* Todas las tarjetas tendrán la misma altura */
+    display: flex;
+    flex-direction: column;">
+                <div class="col-md-12 d-flex justify-content-center" style="margin-top:10px">
+                    <img v-bind:src="item.ImagenPrincipal || 'https://rhenlinea.entradagroup.com/images/defecto.png'" class="img-fluid  text-center" style="border-radius: 10px;  object-fit: cover; /* Ajusta la imagen sin distorsión */
+    border-radius: 10px;" width="236" height="115" alt="...">
+                </div>
+                <div class="col-md-12 ">
+                    <div class="card-body text-centert">
+                        <h5 class="text-center text-dark" style="color:black">{{item.Titulo}}</h5>
+                        <p style="text-align:justify;" v-html="item.Resumen"></p>
+
+                        <div class="text-center">
+                        <button type="button" class="btn btn-primary"
+                                v-on:click="BtnEditar(true,Indice)"
+                                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                            <i class="bi bi-folder2-open"></i>
+                                Abrir                                                        
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    Swal.fire({
+        title: 'Procesando',
+        text: "Por favor espera",
+        showConfirmButton: false,
+    });
+
+    var dtt = null;
+
+        var MyAppVue = new Vue({
+        el: '#divApp',
+        data: {
+            Titulo: 'Solicitud',
+            Titulo2: '',
+            bEditar: false,
+            isReadOnly: true,
+            Listado: null,
+            Item: null,
+            selectedOption: '',
+
+            FilaModelo: {
+                EncuestaId: 0,
+                CategoriaCode: '',
+                Nombre: '',
+                Descripcion: '',
+                EsActivo: true,
+                CategoriaCodePadre: '',
+                FechaInserta: '',
+                UsuarioIdInserta: '',
+                FechaActualiza: '',
+                UsuarioIdActualiza: '',
+                FechaElimina: '',
+                UsuarioIdElimina: '',
+                selectRes: [],
+                seleccionados: null,
+                Respuesta: '',
+                Respuesta_check: [],
+                Respuesta_carro: [],
+                Respuesta: [],
+                preguntas: [],
+                Email: '',
+                Pregunta: ''
+            }
+        },
+        mounted() {
+            document.getElementById("page_controller").innerHTML = "@ViewData[" Title "]";
+            document.getElementById("page_action").innerHTML = "Solicitudes";
+            this.BtnListado();
+        },
+        methods: {
+            LeerSeleccionados() {
+                let Seleccionados = [];
+                let Checks = document.getElementsByName("MultiCheck[]");
+                for (let i = 0; i < Checks.length; i++) {
+                    if (Checks[i].checked) {
+                        Seleccionados.push(this.FilaModelo._EncuestaOpcionListado[Checks[i].value]);
+                    }
+                }
+                console.log(this.Lista);
+                console.log(Seleccionados);
+                return Seleccionados;
+
+            },
+            Checados() {
+                debugger;
+                let checked = document.getElementById("Chk").checked;
+                let Checks = document.getElementsByName("MultiCheck[]");
+                for (let i = 0; i < Checks.length; i++)
+                    Checks[i].checked = checked;
+
+            },
+            BtnGenerar() {
+                axios.post(url_base + "api/Encuesta/Generar").
+                then(response => {
+                    if (response.data.Number >= 0) {}
+                }).catch(error => {
+                    console.log("### ERROR ::");
+                    console.log(error)
+                });
+            },
+            BtnGuardar() {
+                debugger;
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+                console.log(url_base);
+                console.log(this.FilaModelo);
+                this.FilaModelo.Contenido = this.FilaModelo.Respuesta;
+
+                axios.post(url_base + "api/CmsSolicitud/Enviar", this.FilaModelo, this._EncuestaOpcionListado).
+                then(response => {
+
+                    if (response.data.Number >= 0) {
+                        this.bEditar = false;
+                        this.BtnListado();
+                        $("#Modal1").modal("hide");
+                    } else {
+                        Swal.fire(response.data.Message);
+                    }
+
+                }).catch(error => {
+                    console.log("### ERROR ::");
+                    console.log(error)
+                });
+            },
+            BtnEditar(beditar, indice) {
+
+                console.log(this.bEditar);
+                this.bEditar = beditar;
+                if (this.bEditar)
+                    $("#Modal1").modal("show");
+                else
+                    $("#Modal1").modal("hide");
+                if (indice >= 0) {
+                    this.Titulo2 = "Encuesta";
+                    this.isReadOnly = true;
+                    this.isReadOnly = true;
+                    this.FilaModelo = null;
+                    Swal.fire({
+                        title: 'Procesando',
+                        text: "Por favor espera",
+                        showConfirmButton: false,
+                    });
+
+                    axios.post(url_base + "api/ACmsDocumento/LeerItem/", {
+                        DocumentoId: this.Listado[indice].DocumentoId
+                    }).
+                    then(response => {
+
+                        this.FilaModelo = response.data.OData;
+                        console.log(this.FilaModelo);
+
+                        for (let i = 0; i < this.FilaModelo._EncuestaOpcionListado.length; i++) {
+                            let dat = this.FilaModelo._EncuestaOpcionListado[i];
+
+                            if (dat.Opcion != '') {
+                                this.Respuesta_check = dat.Opcion.split(",");
+                                console.log('res');
+                                console.log(this.Respuesta_check);
+                            }
+
+                        }
+
+                        console.log(this.FilaModelo);
+                        Swal.close();
+
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+                }
+            },
+            BtnListado() {
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+                axios.post(url_base + "api/ACmsDocumento/Listado", {
+                    CategoriaCode: 'solicitudes',_TipoFecha :"visible"
+                }).
+                then(response => {
+
+                    if (response.data.Number >= 0) {
+                        this.Listado = response.data.OData;
+                        console.log(this.Listado);
+                        Swal.close();
+
+                    } else {
+                        Swal.close();
+                    }
+                }).catch(error => {
+                    console.log("### ERROR ::");
+                    console.log(error)
+                });
+            },
+        }
+    });
+</script>
+
+<style lang="css" scoped >
+    .circulo{
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #007bff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .checkbox-container {
+        display: flex; /* Hace que los elementos hijos estén en línea */
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan en múltiples líneas */
+    }
+
+    .checkbox-item {
+        margin-right: 16px; /* Añade un margen derecho entre los checkboxes */
+    }
+
+</style>
+
+
+
+@section Scripts {
+
+    <link href="~/datatables/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/autoFill.bootstrap5.css" rel="stylesheet">
+    <link href="~/datatables/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/colReorder.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.dateTime.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedColumns.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedHeader.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/keyTable.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/scroller.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/select.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/stateRestore.bootstrap5.min.css" rel="stylesheet">
+
+
+                                                        @* <script src="~/datatables/js/bootstrap.bundle.min.js"></script> *@
+    <script src="~/datatables/js/jszip.min.js"></script>
+    <script src="~/datatables/js/pdfmake.min.js"></script>
+    <script src="~/datatables/js/vfs_fonts.js"></script>
+    <script src="~/datatables/js/dataTables.min.js"></script>
+    <script src="~/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.autoFill.min.js"></script>
+    <script src="~/datatables/js/autoFill.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.buttons.min.js"></script>
+    <script src="~/datatables/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/buttons.colVis.min.js"></script>
+    <script src="~/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/datatables/js/buttons.print.min.js"></script>
+    <script src="~/datatables/js/dataTables.colReorder.min.js"></script>
+    <script src="~/datatables/js/dataTables.dateTime.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/datatables/js/dataTables.keyTable.min.js"></script>
+    <script src="~/datatables/js/dataTables.responsive.min.js"></script>
+    <script src="~/datatables/js/responsive.bootstrap5.js"></script>
+    <script src="~/datatables/js/dataTables.scroller.min.js"></script>
+    <script src="~/datatables/js/dataTables.select.min.js"></script>
+    <script src="~/datatables/js/dataTables.stateRestore.min.js"></script>
+    <script src="~/datatables/js/stateRestore.bootstrap5.min.js"></script>
+
+}

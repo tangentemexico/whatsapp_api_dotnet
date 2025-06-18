@@ -1,0 +1,82 @@
+﻿<!doctype html>
+@{
+    String Titulo = Mgk.Base.Parametro.ParametroCtrl.GetValue("g_titulo");
+    String Propietario = Mgk.Base.Parametro.ParametroCtrl.GetValue("g_propietario");    
+}
+<html lang="en" class="h-100" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.122.0">
+    <title>@Titulo @ViewBag.Title</title>
+
+    <link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="~/images/icono.png" sizes="180x180">
+    <link rel="icon" href="~/images/icono.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="~/images/icono.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="~/favicon.ico">
+
+    <meta name="theme-color" content="#712cf9">
+
+    <style>
+        main > .container {
+            padding: 100px 15px 0;
+        }
+    </style>
+
+
+    <!-- Custom styles for this template -->
+    <script src="~/Scripts/vue.js"></script>
+    <script src="~/sweetalert/sweetalert2.all.min.js"></script>
+    <script src="~/Scripts/axios.js"></script>
+    <script src="~/scripts/jquery.min.js"></script>
+
+    <script>
+        var url_base = "@Url.Content("~/")";
+    </script>
+
+
+</head>
+<body class="d-flex flex-column h-100">
+
+    <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light " style="border-bottom:solid 5px #4C687B">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <img src="~/images/logo.png" alt="Inicio" style="height:50px">
+                </a>
+@*                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button> *@
+            </div>
+        </nav>
+    </header>
+
+    <!-- Begin page content -->
+    <main class="flex-shrink-0">
+        <div class="container">
+            @RenderBody()
+
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-body-tertiary">
+        <div class="container">
+            <span class="text-body-secondary">
+                <a class="text-muted" href="http://tangentemexico.com" target="_new">Desarrollado por tangentemexico.com</a>
+
+                <a class="text-muted" href="~/privacidad" target="_new">Aviso de privacidad</a>
+            </span>
+        </div>
+    </footer>
+
+    <script src="~/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

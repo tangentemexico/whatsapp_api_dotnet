@@ -1,0 +1,276 @@
+﻿@{
+    ViewData["Title"] = "Modulo";
+}
+
+<div id="divParametros">
+
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <div class="d-flex" role="search">
+                <button class="btn btn-outline-success" v-on:click="BtnListado" type="button">
+                    <i class="bi bi-list-task"></i>
+                    Listado
+                </button>
+                <span>&nbsp;</span>
+                <button class="btn btn-outline-success" v-on:click="BtnEditar(true,-1)" type="button">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    Nuevo
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <table class="table table-bordered table-striped" id="tb_listado">
+        <thead>
+            <tr>
+                <th style="width:150px !important">___________</th>
+                <th>Modulo_cod</th>
+                <th>Nombre</th>
+                <th>Es_activo</th>
+                <th>Permisos</th>
+                <th>Ruta</th>
+                <th>RutaApi</th>
+            </tr>
+        </thead>
+        <tbody v-if="Listado!=null">
+            <tr v-for="item,Indice in Listado">
+                <td>
+                    <button type="button" class="btn btn-info btn-sm" v-on:click="BtnEditar(true,Indice)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" v-on:click="BtnBorrar(Indice)">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </td>
+                <td>{{item.Modulo_cod}}</td>
+                <td>{{item.Nombre}}</td>
+                <td>{{item.Es_activo}}</td>
+                <td>{{item.Permisos}}</td>
+                <td>{{item.Ruta}}</td>
+                <td>{{item.RutaApi}}</td>
+            </tr>
+        </tbody>
+        <tbody v-else>
+            <tr>
+                <td colspan="13">No hay información</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="modal" tabindex="-1" id="Modal1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{Titulo}} {{Titulo2}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="FilaModelo!=null">
+
+
+                        <div class="row mb-3">      <label for="Modulo_cod" class="col-sm-4 col-form-label">Modulo_cod</label>      <div class="col-sm-8">          <input type="text" class="form-control" id="Modulo_cod" v-model="FilaModelo.Modulo_cod" Title=''>      </div>  </div>
+                        <div class="row mb-3">      <label for="Nombre" class="col-sm-4 col-form-label">Nombre</label>      <div class="col-sm-8">          <input type="text" class="form-control" id="Nombre" v-model="FilaModelo.Nombre" Title=''>      </div>  </div>
+                        <div class="row mb-3">      <label for="Es_activo" class="col-sm-4 col-form-label">Es_activo</label>      <div class="col-sm-8">
+                                <input type="checkbox" style="width:25px;height:25px" id="Es_activo" v-model="FilaModelo.Es_activo" Title=''>
+                            </div>
+                        </div>
+                        <div class="row mb-3">      <label for="Permisos" class="col-sm-4 col-form-label">Permisos</label>      <div class="col-sm-8">          <input type="text" class="form-control" id="Permisos" v-model="FilaModelo.Permisos" Title=''>      </div>  </div>
+                        <div class="row mb-3">      <label for="Ruta" class="col-sm-4 col-form-label">Ruta</label>      <div class="col-sm-8">          <input type="text" class="form-control" id="Ruta" v-model="FilaModelo.Ruta" Title=''>      </div>  </div>
+                        <div class="row mb-3">      <label for="RutaApi" class="col-sm-4 col-form-label">RutaApi</label>      <div class="col-sm-8">          <input type="text" class="form-control" id="RutaApi" v-model="FilaModelo.RutaApi" Title=''>      </div>  </div>
+
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" v-on:click="BtnEditar(false,-1)" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Close</button>
+                    <button type="button" class="btn btn-primary" v-on:click="BtnGuardar()"> <i class="bi bi-floppy"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    Swal.fire({
+        title: 'Procesando',
+        text: "Por favor espera",
+        showConfirmButton: false,
+    });
+
+    var dtt = null;
+
+    var ParametrosVue = new Vue({
+        el: '#divParametros',
+        data: {
+            Titulo: '@Html.Raw(ViewData["Title"])',
+            Titulo2: '',
+            bEditar: false,
+            isReadOnly: true,
+            Listado: null,
+            FilaModelo: {
+                Modulo_cod: '',
+                Nombre: '',
+                Es_activo: '',
+                Permisos: '',
+                Ruta: '',
+                RutaApi: '',
+            }
+        },
+        mounted() {
+            document.getElementById("page_controller").innerHTML = "@ViewData["Title"]";
+            document.getElementById("page_action").innerHTML = "Opciones del sistema";
+            this.BtnListado();
+        },
+        methods: {
+            BtnListado() {
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+                axios.get(url_base + "api/AModulo/Modulos").
+                    then(response => {
+
+                        if (response.data.Number >= 0) {
+                            this.Listado = response.data.OData;
+
+                            if (dtt != null)
+                                $('#tb_listado').DataTable().destroy();
+
+                            setTimeout(() => {
+                                dtt = $('#tb_listado').DataTable({
+                                    responsive: true,
+                                    dom: 'lBfrtip',
+                                    "lengthMenu": [[-1, 10, 25, 50], ["Todas", 10, 25, 50]],
+                                    buttons: ['copy', 'excel']
+                                });
+                                Swal.close();
+                            }, 0);
+
+                        } else {
+                            Swal.close();
+                        }
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+            },
+            BtnEditar(bEditar, indice) {
+                this.bEditar = bEditar;
+                if (bEditar)
+                    $("#Modal1").modal("show");
+                else
+                    $("#Modal1").modal("hide");
+                if (indice >= 0) {
+                    this.Titulo2 = "Editar";
+                    this.isReadOnly = true;
+                    this.FilaModelo = this.Listado[indice];
+
+                    // axios.get(url_base + "api/AMenu/" +this.Listado[indice].Menu_id).
+                    //     then(response => {
+                    //         this.FilaModelo = response.data.OData;
+                    //     }).catch(error => {
+                    //         console.log("### ERROR ::");
+                    //         console.log(error)
+                    //     });
+                }
+                else {
+                    this.Titulo2 = "Nuevo";
+                    this.isReadOnly = false;
+                    this.FilaModelo = {
+                        Modulo_cod: '',
+                        Nombre: '',
+                        Es_activo: false,
+                        Permisos: 0,
+                        Ruta: '',
+                        RutaApi: '',
+                    };
+                }
+            },
+            BtnGuardar() {
+                Swal.fire({
+                    title: 'Procesando',
+                    text: "Por favor espera",
+                    showConfirmButton: false,
+                });
+                console.log(url_base);
+                console.log(this.FilaModelo);
+
+                axios.post(url_base + "api/AModulo/Guardar", this.FilaModelo).
+                    then(response => {
+                        if (response.data.Number >= 0) {
+                            this.bEditar = false;
+                            this.BtnListado();
+                            $("#Modal1").modal("hide");
+                        } else {
+                            Swal.fire(response.data.Message);
+                        }
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+            },
+            BtnBorrar(Indice) {
+                if (!confirm("Desea eliminar el registro seleccionado?"))
+                    return;
+                axios.delete(url_base + "api/AModulo/" + this.Listado[Indice].Modulo_cod).
+                    then(response => {
+                        alert(response.data.Message);
+                        if (response.data.Number >= 0) {
+                            this.bEditar = false;
+                            this.BtnListado();
+                        }
+                    }).catch(error => {
+                        console.log("### ERROR ::");
+                        console.log(error)
+                    });
+            },
+        }
+    });
+</script>
+
+@section Scripts {
+
+    <link href="~/datatables/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/autoFill.bootstrap5.css" rel="stylesheet">
+    <link href="~/datatables/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/colReorder.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/dataTables.dateTime.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedColumns.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/fixedHeader.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/keyTable.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/scroller.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/select.bootstrap5.min.css" rel="stylesheet">
+    <link href="~/datatables/css/stateRestore.bootstrap5.min.css" rel="stylesheet">
+
+
+                                                        @* <script src="~/datatables/js/bootstrap.bundle.min.js"></script> *@
+    <script src="~/datatables/js/jszip.min.js"></script>
+    <script src="~/datatables/js/pdfmake.min.js"></script>
+    <script src="~/datatables/js/vfs_fonts.js"></script>
+    <script src="~/datatables/js/dataTables.min.js"></script>
+    <script src="~/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.autoFill.min.js"></script>
+    <script src="~/datatables/js/autoFill.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/dataTables.buttons.min.js"></script>
+    <script src="~/datatables/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/datatables/js/buttons.colVis.min.js"></script>
+    <script src="~/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/datatables/js/buttons.print.min.js"></script>
+    <script src="~/datatables/js/dataTables.colReorder.min.js"></script>
+    <script src="~/datatables/js/dataTables.dateTime.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/datatables/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/datatables/js/dataTables.keyTable.min.js"></script>
+    <script src="~/datatables/js/dataTables.responsive.min.js"></script>
+    <script src="~/datatables/js/responsive.bootstrap5.js"></script>
+    <script src="~/datatables/js/dataTables.scroller.min.js"></script>
+    <script src="~/datatables/js/dataTables.select.min.js"></script>
+    <script src="~/datatables/js/dataTables.stateRestore.min.js"></script>
+    <script src="~/datatables/js/stateRestore.bootstrap5.min.js"></script>
+
+}

@@ -1,0 +1,104 @@
+﻿@using Mgk.Base.WebCore.Codigo;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    Mgk.Base.ControlAcceso.AccesoModel AccesoMo = HttpContextAccessor.HttpContext.Session.GetObjectFromJson<Mgk.Base.ControlAcceso.AccesoModel>(Mgk.Base.Parametro.AppConstantes.SESION_NOMBRE);
+    String Titulo = Mgk.Base.Parametro.ParametroCtrl.GetValue("g_titulo");
+    List<Mgk.Base.Menu.MenuModel> MenuList = AccesoMo._UsuarioMo._MenuList;
+}
+        <aside class="app-aside app-aside-expand-md app-aside-light">
+            <!-- .aside-content -->
+            <div class="aside-content">
+                <!-- .aside-header -->
+                <header class="aside-header d-block d-md-none">
+                    <!-- .btn-account -->
+                    <button class="btn-account" type="button" data-toggle="collapse" data-target="#dropdown-aside"><span class="user-avatar user-avatar-lg"><img src="~/looper/images/avatars/profile.jpg" alt=""></span> <span class="account-icon"><span class="fa fa-caret-down fa-lg"></span></span> <span class="account-summary"><span class="account-name">Beni Arisandi</span> <span class="account-description">Marketing Manager</span></span></button> <!-- /.btn-account -->
+                    <!-- .dropdown-aside -->
+                    <div id="dropdown-aside" class="dropdown-aside collapse">
+                        <!-- dropdown-items -->
+                        <div class="pb-3">
+                            <a class="dropdown-item" href="user-profile.html"><span class="dropdown-icon oi oi-person"></span> Profile</a> <a class="dropdown-item" href="auth-signin-v1.html"><span class="dropdown-icon oi oi-account-logout"></span> Logout</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#">Help Center</a> <a class="dropdown-item" href="#">Ask Forum</a> <a class="dropdown-item" href="#">Keyboard Shortcuts</a>
+                        </div><!-- /dropdown-items -->
+                    </div><!-- /.dropdown-aside -->
+                </header><!-- /.aside-header -->
+                <!-- .aside-menu -->
+                <div class="aside-menu overflow-hidden">
+                    <!-- .stacked-menu -->
+                    <nav id="stacked-menu" class="stacked-menu">
+                        <!-- .menu -->
+                        <ul class="menu">
+                            <!-- .menu-item -->
+                            <li class="menu-item">
+                                <a href="~/" class="menu-link"><span class="menu-icon fas fa-home"></span> <span class="menu-text">Inicio</span></a>
+                            </li><!-- /.menu-item -->
+                            <!-- .menu-item -->
+                    @foreach (var itemP in MenuList.Where(x => x.Grupo >= 1000 && x.Menu_id_padre==0).ToList())
+                    {
+                            <li class="menu-item  has-child">
+                                <a href="#" class="menu-link">
+                                    <span class="menu-icon far fa-file"></span> 
+                                    <span class="menu-text">
+                                    @itemP.Titulo
+                                    </span>
+
+                                </a>
+                                <!-- child menu -->
+                                <ul class="menu">
+                                @foreach (var item in MenuList.Where(x => x.Menu_id_padre == itemP.Menu_id).ToList())
+                                    {
+                                        <li class="menu-item">
+                                            
+                                            <a href="~/@item.Enlace" title="@item.Descripcion" class="menu-link"><span class="@item.Imagen"></span> @item.Titulo</a>
+                                        </li>
+                                    }
+
+                                </ul><!-- /child menu -->
+                            </li><!-- /.menu-item -->
+                            }
+                            <!--<li class="menu-item">
+        <a href="landing-page.html" class="menu-link"><span class="menu-icon fas fa-rocket"></span> <span class="menu-text">Landing Page</span></a>
+    </li>-->
+                            <!-- /.menu-item -->
+                            <!-- .menu-header -->
+                            <li class="menu-header">Más opciones </li><!-- /.menu-header -->
+                            <!-- .menu-item -->
+                            
+                    @foreach (var itemP in MenuList.Where(x => x.Grupo < 1000 && x.Menu_id_padre == 0).ToList())
+                    {
+                        <li class="menu-item  has-child">
+                            <a href="#" class="menu-link">
+                                <span class="menu-icon oi oi-puzzle-piece"></span>
+                                <span class="menu-text">
+                                    @itemP.Titulo
+                                </span>
+
+                            </a>
+                            <!-- child menu -->
+                            <ul class="menu">
+                                @foreach (var item in MenuList.Where(x => x.Menu_id_padre == itemP.Menu_id).ToList())
+                                {
+                                    <li class="menu-item">
+
+                                        <a href="~/@item.Enlace" title="@item.Descripcion" class="menu-link"><span class="@item.Imagen"></span> @item.Titulo</a>
+                                    </li>
+                                }
+
+                            </ul><!-- /child menu -->
+                        </li>
+
+                        <!-- /.menu-item -->
+                    }
+                      
+
+                            <!-- .menu-item -->
+
+                        </ul><!-- /.menu -->
+                    </nav><!-- /.stacked-menu -->
+                </div><!-- /.aside-menu -->
+                <!-- Skin changer -->
+                <footer class="aside-footer border-top p-2">
+                    <button class="btn btn-light btn-block text-primary" data-toggle="skin"><span class="d-compact-menu-none">Modo nocturno</span> <i class="fas fa-moon ml-1"></i></button>
+                </footer><!-- /Skin changer -->
+            </div><!-- /.aside-content -->
+        </aside><!-- /.app-aside -->
